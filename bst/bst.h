@@ -1,5 +1,7 @@
 #include <memory>
 #include <iostream>
+#include <queue>
+#include <functional>
 
 template <class T>
 struct Node{
@@ -25,7 +27,6 @@ public:
 	void r_child(Node* r_ch);
 	
 };
-
 
 template <class T>
 inline
@@ -109,15 +110,49 @@ void Node<T>::r_child(Node* r_ch){
 template <class T>
 class BST{
 public:
+	BST(){};
+	~BST();
 	void insert(const T& value);
 	Node<T>* max();
 	Node<T>* min();
-	void removeNode(T value);
-
+	void removeNode(const T& value);
+	Node<T>* search(const T& value);
+	
 private:
+	void _bf_traversal(std::function<void(Node<T>*)>);
 	Node<T>* _root = nullptr;
 	
 };
+
+template <class T>
+inline
+BST<T>::~BST() {
+	if(_root != nullptr){
+		_bf_traversal([](Node<T>* node){
+			if(node != nullptr)
+				delete node;
+		});
+	}
+}
+
+template <class T>
+inline
+void BST<T>::_bf_traversal(std::function<void(Node<T>*)> for_each) {
+	if(_root == nullptr)
+		return;
+	std::queue<Node<T>*> nodes;
+	nodes.push(_root);
+	while(!nodes.empty()){
+		Node<T>* currNode = nodes.front();
+		nodes.pop();
+		if(currNode->l_child() != nullptr)
+			nodes.push(currNode->l_child());
+		if(currNode->r_child() != nullptr)
+			nodes.push(currNode->r_child());
+		for_each(currNode);
+	}
+}
+
 
 template <class T>
 inline
@@ -126,13 +161,13 @@ void BST<T>::insert(const T& value){
 	node->value(value);
 	Node<T>** currRoot = &_root;
 	while(*currRoot != nullptr){
+		node->parent(*currRoot);
 		if(node->value() < (*currRoot)->value())
 			currRoot = (*currRoot)->l_child_ptr();
 		else 
-			currRoot = (*currRoot)->r_child_ptr();	
+			currRoot = (*currRoot)->r_child_ptr();
        }
-	*currRoot = node;		
-			
+	*currRoot = node;					
 }
 
 template <class T>
@@ -143,8 +178,7 @@ Node<T>* BST<T>::max(){
 	Node<T>* currRoot = _root;
 	while(currRoot->r_child() != nullptr)
 		currRoot = currRoot->r_child();	
-   	return currRoot;	
-			
+   	return currRoot;				
 }
 
 template <class T>
@@ -159,19 +193,33 @@ Node<T>* BST<T>::min(){
 			
 }
 
-int main(int argc, char *argv[])
-{
-    BST<float> testbst;
-	testbst.insert(5.1);
-	testbst.insert(5.23);
-	testbst.insert(6.1);
-	testbst.insert(6.2);
+template <class T>
+inline
+void BST<T>::removeNode(const T& value){
+	Node<T>* node = search(value);
+	if(node == nullptr)
+		return;
+	if ((node->l_child() == nullptr) && (node->r_child() == nullptr))
+		delete node;
 	
-	
-	std::cout<<testbst.max()->value()<<'\n';
-	std::cout<<testbst.min()->value()<<'\n';
-    return 0;
 }
+
+template <class T>
+inline
+Node<T>* BST<T>::search(const T& value){
+	Node<T>* currNode = _root;
+	while(currNode != nullptr){
+		if(value < currNode->value())
+			currNode = currNode->l_child();			
+		else if(value > currNode->value())
+			currNode = currNode->l_child();
+		else
+			return currNode;		
+	}
+	return nullptr;	
+}
+
+
 
 
 
