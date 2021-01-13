@@ -119,7 +119,10 @@ public:
 	Node<T>* search(const T& value);
 	
 private:
-	void _bf_traversal(std::function<void(Node<T>*)>);
+	void _bfTraversal(std::function<void(Node<T>*)>);
+	void _delLeafNode(Node<T>* node);
+	void _delOneChildNode(Node<T>* node);
+	void _delTwoChildNode(Node<T>* node);
 	Node<T>* _root = nullptr;
 	
 };
@@ -128,7 +131,7 @@ template <class T>
 inline
 BST<T>::~BST() {
 	if(_root != nullptr){
-		_bf_traversal([](Node<T>* node){
+		_bfTraversal([](Node<T>* node){
 			if(node != nullptr)
 				delete node;
 		});
@@ -137,7 +140,7 @@ BST<T>::~BST() {
 
 template <class T>
 inline
-void BST<T>::_bf_traversal(std::function<void(Node<T>*)> for_each) {
+void BST<T>::_bfTraversal(std::function<void(Node<T>*)> for_each) {
 	if(_root == nullptr)
 		return;
 	std::queue<Node<T>*> nodes;
@@ -200,8 +203,45 @@ void BST<T>::removeNode(const T& value){
 	if(node == nullptr)
 		return;
 	if ((node->l_child() == nullptr) && (node->r_child() == nullptr))
-		delete node;
-	
+		_delLeafNode(node);
+	else if ((node->l_child() == nullptr) || (node->r_child() == nullptr))
+		_delSingleChildNode(node);
+	else
+		_delTwoChildNode(node);
+}
+
+template <class T>
+inline
+void BST<T>::_delLeafNode(Node<T>* node){
+	if(node->value() < node->parent()->value())
+		node->parent()->l_child(nullptr);
+	else
+		node->parent()->r_child(nullptr);
+	delete node;
+}
+
+template <class T>
+inline
+void BST<T>::_delOneChildNode(Node<T>* node){
+	Node<T>* childNode = node->r_child() != nullptr ? node->r_child() : node->l_child();
+	childNode->parent(node->parent());
+	if(node->parent()->value() < node->value())
+		node->parent()->r_child(childNode);
+	else
+		node->parent()->l_child(childNode);
+	delete node;
+}
+
+template <class T>
+inline
+void BST<T>::_delTwoChildNode(Node<T>* node){
+	Node<T>* childNode = node->r_child() != nullptr ? node->r_child() : node->l_child();
+	childNode->parent(node->parent());
+	if(node->parent()->value() < node->value())
+		node->parent()->r_child(childNode);
+	else
+		node->parent()->l_child(childNode);
+	delete node;
 }
 
 template <class T>
