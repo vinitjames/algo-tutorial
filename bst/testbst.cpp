@@ -14,5 +14,8 @@ int main(int argc, char *argv[]) {
   std::cout << "max parent " << testbst.max()->parent()->value() << '\n';
   std::cout << "min " << testbst.min()->value() << '\n';
   std::cout << "min parent " << testbst.min()->parent()->value() << '\n';
+  testbst.removeNode(5.3);
+  testbst.forEach(
+      [](Node<float> *node) { std::cout << node->value() << std::endl; });
   return 0;
 }

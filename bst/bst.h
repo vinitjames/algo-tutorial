@@ -65,9 +65,12 @@ public:
   Node<T> *min();
   void removeNode(const T &value);
   Node<T> *search(const T &value);
+  void forEach(std::function<void(Node<T> *)> for_each);
 
 private:
-  void _bfTraversal(std::function<void(Node<T> *)>);
+  Node<T> *_max(Node<T> *root);
+  Node<T> *_min(Node<T> *root);
+  void _bfTraversal(std::function<void(Node<T> *)> for_each);
   void _delLeafNode(Node<T> *node);
   void _delOneChildNode(Node<T> *node);
   void _delTwoChildNode(Node<T> *node);
@@ -83,6 +86,10 @@ template <class T> inline BST<T>::~BST() {
   }
 }
 
+template <class T>
+inline void BST<T>::forEach(std::function<void(Node<T> *)> for_each) {
+  _bfTraversal(for_each);
+}
 template <class T>
 inline void BST<T>::_bfTraversal(std::function<void(Node<T> *)> for_each) {
   if (_root == nullptr)
@@ -117,7 +124,11 @@ template <class T> inline void BST<T>::insert(const T &value) {
 template <class T> inline Node<T> *BST<T>::max() {
   if (_root == nullptr)
     return nullptr;
-  Node<T> *currRoot = _root;
+  return _max(_root);
+}
+
+template <class T> inline Node<T> *BST<T>::_max(Node<T> *root) {
+  Node<T> *currRoot = root;
   while (currRoot->r_child() != nullptr)
     currRoot = currRoot->r_child();
   return currRoot;
@@ -126,7 +137,11 @@ template <class T> inline Node<T> *BST<T>::max() {
 template <class T> inline Node<T> *BST<T>::min() {
   if (_root == nullptr)
     return nullptr;
-  Node<T> *currRoot = _root;
+  return _min(_root);
+}
+
+template <class T> inline Node<T> *BST<T>::_min(Node<T> *root) {
+  Node<T> *currRoot = root;
   while (currRoot->l_child() != nullptr)
     currRoot = currRoot->l_child();
   return currRoot;
@@ -134,12 +149,15 @@ template <class T> inline Node<T> *BST<T>::min() {
 
 template <class T> inline void BST<T>::removeNode(const T &value) {
   Node<T> *node = search(value);
-  if (node == nullptr)
+  if (node == nullptr) {
+    std::cout << "node not found " << std::endl;
     return;
+  }
+  std::cout << "found node with value " << node->value() << std::endl;
   if ((node->l_child() == nullptr) && (node->r_child() == nullptr))
     _delLeafNode(node);
   else if ((node->l_child() == nullptr) || (node->r_child() == nullptr))
-    _delSingleChildNode(node);
+    _delOneChildNode(node);
   else
     _delTwoChildNode(node);
 }
@@ -164,25 +182,39 @@ template <class T> inline void BST<T>::_delOneChildNode(Node<T> *node) {
 }
 
 template <class T> inline void BST<T>::_delTwoChildNode(Node<T> *node) {
-  Node<T> *childNode =
-      node->r_child() != nullptr ? node->r_child() : node->l_child();
-  childNode->parent(node->parent());
-  if (node->parent()->value() < node->value())
-    node->parent()->r_child(childNode);
+
+  Node<T> *inorderSucc = _min(node->r_child());
+  if (inorderSucc->parent() == node)
+    inorderSucc->parent()->r_child(inorderSucc->r_child());
   else
-    node->parent()->l_child(childNode);
-  delete node;
+    inorderSucc->parent()->l_child(inorderSucc->r_child());
+  /*inorderSucc->parent(node->parent());
+  inorderSucc->l_child(node->l_child());
+  inorderSucc->r_child(node->r_child());
+  if (node->parent() != nullptr) {
+    if (node->parent()->l_child() == node)
+      node->parent()->l_child(inorderSucc);
+    else
+      node->parent()->r_child(inorderSucc);
+  }
+
+  if (node->l_child() != nullptr)
+    node->l_child()->parent(inorderSucc);
+  if (node->r_child() != nullptr)
+  node->r_child()->parent(inorderSucc);*/
+  node->value(std::move(inorderSucc->value()));
+  delete inorderSucc;
 }
 
 template <class T> inline Node<T> *BST<T>::search(const T &value) {
   Node<T> *currNode = _root;
   while (currNode != nullptr) {
+    if (value == currNode->value())
+      return currNode;
     if (value < currNode->value())
       currNode = currNode->l_child();
-    else if (value > currNode->value())
-      currNode = currNode->l_child();
     else
-      return currNode;
+      currNode = currNode->r_child();
   }
   return nullptr;
 }
