@@ -19,9 +19,11 @@ public:
   Node *parent();
   void parent(Node *parent);
   Node *l_child();
+  const Node *l_child() const;
   Node **l_child_ptr();
   void l_child(Node *l_ch);
   Node *r_child();
+  const	Node *r_child() const;
   Node **r_child_ptr();
   void r_child(Node *r_ch);
 };
@@ -45,12 +47,15 @@ template <class T> inline void Node<T>::parent(Node *parent) {
 }
 
 template <class T> inline Node<T> *Node<T>::l_child() { return _l_child; }
+template <class T> inline const Node<T> *Node<T>::l_child() const { return _l_child; }
+
 
 template <class T> inline Node<T> **Node<T>::l_child_ptr() { return &_l_child; }
 
 template <class T> inline void Node<T>::l_child(Node *l_ch) { _l_child = l_ch; }
 
 template <class T> inline Node<T> *Node<T>::r_child() { return _r_child; }
+template <class T> inline const Node<T> *Node<T>::r_child() const { return _r_child; }
 
 template <class T> inline Node<T> **Node<T>::r_child_ptr() { return &_r_child; }
 
@@ -66,6 +71,7 @@ public:
   void removeNode(const T &value);
   Node<T> *search(const T &value);
   void forEach(std::function<void(Node<T> *)> for_each);
+	const Node<T>* root() const {return _root;}
 
 private:
   Node<T> *_max(Node<T> *root);
