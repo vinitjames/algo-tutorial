@@ -2,140 +2,18 @@
 #include <iostream>
 #include <memory>
 #include <queue>
+#include "../bst/bst.h"
 
 
-template <class T, typename meta_data_type = int> struct Node {
-
-private:
-  T _value;
-  Node *_parent = nullptr;
-  Node *_l_child = nullptr;
-  Node *_r_child = nullptr;
-  meta_data_type _meta_data; 
-
+template <class T, typename metadata> class AVL : public BST<T, metadata>{
 public:
-  void value(const T &value);
-  void value(const T &&value);
-  T &value();
-  const T &value() const;
-  void meta_data(const meta_data_type &meta_data);
-  void meta_data(const meta_data_type &&meta_data);
-  meta_data_type& meta_data();
-  const meta_data_type &meta_data() const;
+  AVL(){};
+  ~AVL();
   
-  Node *parent();
-  void parent(Node *parent);
-  Node *l_child();
-  const Node *l_child() const;
-  Node **l_child_ptr();
-  void l_child(Node *l_ch);
-  Node *r_child();
-  const	Node *r_child() const;
-  Node **r_child_ptr();
-  void r_child(Node *r_ch);
-};
-
-template <class T, typename meta_data_type>
-inline
-void Node<T, meta_data_type>::value(const T &value) {
-  _value = value;
-}
-
-template <class T, typename meta_data_type>
-inline
-void Node<T, meta_data_type>::value(const T &&value) {
-  _value = std::move(value);
-}
-
-template <class T, typename meta_data_type>
-inline
-T &Node<T, meta_data_type>::value() { return _value; }
-
-template <class T, typename meta_data_type>
-inline
-const T &Node<T, meta_data_type>::value() const { return _value; }
-
-template <class T, typename meta_data_type>
-inline
-void Node<T, meta_data_type>::meta_data(const meta_data_type &meta_data) {
-  _meta_data = meta_data;
-}
-
-template <class T, typename meta_data_type>
-inline
-void Node<T, meta_data_type>::meta_data(const meta_data_type &&meta_data) {
-  _meta_data = std::move(meta_data);
-}
-
-template <class T, typename meta_data_type>
-inline
-meta_data_type &Node<T, meta_data_type>::meta_data() { return _meta_data; }
-
-template <class T, typename meta_data_type>
-inline
-const meta_data_type &Node<T, meta_data_type>::meta_data() const { return _meta_data; }
-
-
-template <class T, typename meta_data_type>
-inline
-Node<T, meta_data_type> *Node<T, meta_data_type>::parent() { return _parent; }
-
-template <class T, typename meta_data_type>
-inline
-void Node<T, meta_data_type>::parent(Node *parent) {_parent = parent;}
-
-template <class T, typename meta_data_type>
-inline
-Node<T, meta_data_type> *Node<T, meta_data_type>::l_child() { return _l_child; }
-
-template <class T, typename meta_data_type>
-inline
-const Node<T, meta_data_type> *Node<T, meta_data_type>::l_child() const { return _l_child; }
-
-
-template <class T, typename meta_data_type>
-inline
-Node<T, meta_data_type> **Node<T, meta_data_type>::l_child_ptr() { return &_l_child; }
-
-template <class T, typename meta_data_type>
-inline
-void Node<T, meta_data_type>::l_child(Node *l_ch) { _l_child = l_ch; }
-
-template <class T, typename meta_data_type>
-inline Node<T, meta_data_type> *Node<T, meta_data_type>::r_child() { return _r_child; }
-
-template <class T, typename meta_data_type>
-inline
-const Node<T, meta_data_type> *Node<T, meta_data_type>::r_child() const { return _r_child; }
-
-template <class T, typename meta_data_type>
-inline
-Node<T, meta_data_type> **Node<T, meta_data_type>::r_child_ptr() { return &_r_child; }
-
-template <class T, typename meta_data_type>
-inline
-void Node<T, meta_data_type>::r_child(Node *r_ch) { _r_child = r_ch; }
-
-template <class T> class BST {
-public:
-  BST(){};
-  ~BST();
-  void insert(const T &value);
-  Node<T> *max();
-  Node<T> *min();
-  void removeNode(const T &value);
-  Node<T> *search(const T &value);
-  void forEach(std::function<void(Node<T> *)> for_each);
-	const Node<T>* root() const {return _root;}
 
 private:
-  Node<T> *_max(Node<T> *root);
-  Node<T> *_min(Node<T> *root);
-  void _bfTraversal(std::function<void(Node<T> *)> for_each);
-  void _delLeafNode(Node<T> *node);
-  void _delOneChildNode(Node<T> *node);
-  void _delTwoChildNode(Node<T> *node);
-  Node<T> *_root = nullptr;
+  
+ 
 };
 
 template <class T> inline BST<T>::~BST() {
