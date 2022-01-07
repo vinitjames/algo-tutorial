@@ -16,7 +16,7 @@ class BST {
 public:
 	using node_type = TNode<TData, TMeta>;
 	
-	BST(){};
+	BST() = default;
 	
 	~BST(){
 		if (_root != nullptr) {
@@ -27,18 +27,23 @@ public:
 		}
 	}
 	
-	virtual void insert(const TData &value){
+	virtual node_type* insert(const TData &value){
 		node_type *new_node = new node_type();
 		new_node->value(value);
 		node_type **currRoot = &_root;
 		while (*currRoot != nullptr) {
 			new_node->parent(*currRoot);
+			if (new_node->value() == (*currRoot)->value()){
+				delete new_node;
+				return nullptr;
+			}
 			if (new_node->value() < (*currRoot)->value())
 				currRoot = (*currRoot)->l_child_ptr();
 			else
 				currRoot = (*currRoot)->r_child_ptr();
 		}
 		*currRoot = new_node;
+		return new_node;
 	}
 	
 	virtual node_type *max(){
@@ -53,12 +58,13 @@ public:
 		return _min(_root);
 	}
 	
-	virtual void removeNode(const TData &value){
+	virtual node_type* removeNode(const TData &value){
 		node_type *node = search(value);
 		if (node == nullptr) {
 			std::cout << "node not found " << std::endl;
-			return;
+			return nullptr;
 		}
+		node_type* parent = node->parent();
 		std::cout << "found node with value " << node->value() << std::endl;
 		if ((node->l_child() == nullptr) && (node->r_child() == nullptr))
 			_delLeafNode(node);
@@ -66,6 +72,7 @@ public:
 			_delOneChildNode(node);
 		else
 			_delTwoChildNode(node);
+		return parent;
 	}
 	
 	virtual node_type *search(const TData &value){

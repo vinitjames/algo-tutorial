@@ -1,3 +1,7 @@
+#ifndef AVL_H
+#define AVL_H
+
+
 #include <functional>
 #include <iostream>
 #include <memory>
@@ -10,9 +14,9 @@ class AVL : public BST<Node, T, int>{
 public:
 	using typename BST<Node, T, int>::node_type;
    AVL(){};
-  ~AVL();
-	void insert(const T& value) override;
-	void removeNode(const T& value) override;
+  ~AVL() = default;
+	node_type* insert(const T& value) override;
+	node_type* removeNode(const T& value) override;
 	
   
 private:
@@ -27,47 +31,60 @@ private:
 
 template<typename T>
 inline
-void AVL<T>::insert(const T& value){
-	node_type* node = BST<Node, T, int>::insert(value);
-	rebalance(node);
+typename AVL<T>::node_type* AVL<T>::insert(const T& value){
+	node_type* new_node = BST<Node, T, int>::insert(value);
+	if(new_node == nullptr)
+		return nullptr;
+	rebalance(new_node);
+	return new_node;
 }
 
 template<typename T>
 inline
-void AVL<T>::update_height(node_type* node){
+typename AVL<T>::node_type* AVL<T>::removeNode(const T& value){
+	node_type* parent = BST<Node, T, int>::removeNode(value);
+	if(parent == nullptr)
+		return nullptr;
+	rebalance(parent);
+	return parent;
+}
+
+template<typename T>
+inline
+void AVL<T>::update_height(AVL<T>::node_type* node){
 	node->meta_data() = std::max<int>(height(node->l_child()),
 									  height(node->r_child())) + 1;
 }
 
 template<typename T>
 inline
-int AVL<T>::height(node_type* node){
+int AVL<T>::height(AVL::node_type* node){
 	return node != nullptr ? node->meta_data() : -1 ;
 }
 
 template<typename T>
 inline
-void AVL<T>::right_rotate(node_type* node){
+void AVL<T>::right_rotate(AVL::node_type* node){
 	if(node == nullptr)
 		return;
 	if(node->l_child() == nullptr)
 		return;
 	node_type* temp_node = node->l_child();
 	if (node->parent() == nullptr)
-		_root = temp_node;
+		this->_root = temp_node;
 	else{
 		if(node->parent()->l_child() == node)
-			node->parent()->l_child() = temp_node;
+			node->parent()->l_child(temp_node);
 		else
-			node->parent()->r_child() = temp_node;
+			node->parent()->r_child(temp_node);
 	}
 	
-	temp_node->parent() = node->parent();
-	node->parent() = temp_node;
-	node->l_child() = temp_node->r_child();
+	temp_node->parent(node->parent());
+	node->parent(temp_node);
+	node->l_child(temp_node->r_child());
 	if(node->l_child() != nullptr)
-		node->l_child()->parent() = node;
-	temp_node->r_child() = node;
+		node->l_child()->parent(node);
+	temp_node->r_child(node);
 	update_height(node);
 	update_height(temp_node);	
 }
@@ -81,20 +98,20 @@ void AVL<T>::left_rotate(node_type* node){
 		return;
 	node_type* temp_node = node->r_child();
 	if (node->parent() == nullptr)
-		_root = temp_node;
+		this->_root = temp_node;
 	else{
 		if(node->parent()->l_child() == node)
-			node->parent()->l_child() = temp_node;
+			node->parent()->l_child(temp_node);
 		else
-			node->parent()->r_child() = temp_node;
+			node->parent()->r_child(temp_node);
 	}
 	
-	temp_node->parent() = node->parent();
-	node->parent() = temp_node;
-	node->r_child() = temp_node->l_child();
+	temp_node->parent(node->parent());
+	node->parent(temp_node);
+	node->r_child(temp_node->l_child());
 	if(node->r_child() != nullptr)
-		node->r_child()->parent() = node;
-	temp_node->l_child() = node;
+		node->r_child()->parent(node);
+	temp_node->l_child(node);
 	update_height(node);
 	update_height(temp_node);	
 }
@@ -128,4 +145,4 @@ void AVL<T>::rebalance(node_type* node){
 }
 
 
-
+#endif /* AVL_H */
