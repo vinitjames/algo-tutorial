@@ -27,7 +27,7 @@ public:
 		}
 	}
 	
-	void insert(const TData &value){
+	virtual void insert(const TData &value){
 		node_type *new_node = new node_type();
 		new_node->value(value);
 		node_type **currRoot = &_root;
@@ -41,19 +41,19 @@ public:
 		*currRoot = new_node;
 	}
 	
-	node_type *max(){
+	virtual node_type *max(){
 		if (_root == nullptr)
 			return nullptr;
 		return _max(_root);
 	}
 	
-	node_type *min(){
+	virtual node_type *min(){
 		if (_root == nullptr)
 			return nullptr;
 		return _min(_root);
 	}
 	
-	void removeNode(const TData &value){
+	virtual void removeNode(const TData &value){
 		node_type *node = search(value);
 		if (node == nullptr) {
 			std::cout << "node not found " << std::endl;
@@ -68,7 +68,7 @@ public:
 			_delTwoChildNode(node);
 	}
 	
-	node_type *search(const TData &value){
+	virtual node_type *search(const TData &value){
 		node_type *currNode = _root;
 		while (currNode != nullptr) {
 			if (value == currNode->value())
@@ -81,12 +81,16 @@ public:
 		return nullptr;
 	}
 	
-	void forEach(std::function<void(node_type *)> for_each){
+	virtual void forEach(std::function<void(node_type *)> for_each){
 		_bfTraversal(for_each);
 	}	
 	
 	const node_type* root() const {return _root;}
 
+protected:
+
+	node_type *_root = nullptr;
+	
 private:
 	
 	node_type *_max(node_type *root){
@@ -163,7 +167,6 @@ private:
 		delete inorderSucc;
 	}
 
-	node_type *_root = nullptr;
 };
 
 #endif /* BST_H */
