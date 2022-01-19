@@ -34,4 +34,4 @@ inline void insertion_sort(Iterator begin, Iterator end) {
   }
 }
 
-#endif /* INSERTION_SORT_H */ #include < algorithm>
+#endif /* INSERTION_SORT_H */
