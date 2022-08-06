@@ -19,6 +19,7 @@ namespace custom_hash{
 		return (knuth_prod & 0xFFFFFFFF) >> (32-size_exp);
 	}
 }
+
 	
 
 #endif /* HASH_FUNCTIONS_H */
