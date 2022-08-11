@@ -16,7 +16,7 @@ private:
 					   std::size_t start_pos) const;
 	void _cal_power(std::size_t len);
 	std::uint64_t _base = 257;
-	std::uint64_t _prime_mod = 10000007;
+	std::uint64_t _prime_mod = 1000000007;
 	std::uint64_t _power = 1;
 	
 };
